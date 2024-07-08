@@ -4,6 +4,7 @@ body {
     flex-direction: column;
     align-items: center;
     margin: 0;
+    /* height: auto; */
     background: linear-gradient(to bottom, #d3d3d3, #000000);
     padding: 0;
 }
@@ -16,12 +17,13 @@ h1 {
     display: flex;
     justify-content: space-around;
     width: 90%;
-    margin-top: 20px;
+    margin-top: 40px;
 }
 
 .column {
     width: 30%;
-    padding: 10px;
+    padding: 50px;
+    /* column-gap: 20px !important; */
     background-color: #f4f4f4;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -65,4 +67,50 @@ button {
 
 button:hover {
     background-color: #0056b3;
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: white;
+    margin-top: 40%;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.form-container input {
+    margin: 10px 0;
+    padding: 10px;
+    width: 200px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.form-container button {
+    padding: 10px;
+    width: 100%;
+    border: none;
+    background-color: #5cb85c;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+.but{
+    /* padding-top: px; */
+    margin-top: 80px;
+    /* justify-items: flex-end; */
+    margin-left: 40%;
 }

@@ -1,64 +1,142 @@
-function addTask() { //onclick addtask par lgaya hai
-    var newTaskInput = document.getElementById('new-task'); // Input field ka reference
-    var taskText = newTaskInput.value.trim(); // Input value ko trim karta hai (extra spaces remove karta hai)
-    
-    if (taskText) { // Agar input field empty nahi hai
-        var task = createTaskElement(taskText); // Nayi task element create karta hai
-        document.getElementById('todo-tasks').appendChild(task); // "To Do" column mein task ko add karta hai
-        newTaskInput.value = ''; // Input field ko clear karta hai
+document.addEventListener("DOMContentLoaded", () => {
+    if (localStorage.getItem("loggedIn") === "true") {
+        showKanbanBoard();
+    } else {
+        showLogin();
+    }
+});
+
+function showSignup() {
+    document.getElementById("signup-container").style.display = "flex";
+    document.getElementById("login-container").style.display = "none";
+    document.getElementById("kanban-container").style.display = "none";
+}
+
+function showLogin() {
+    document.getElementById("signup-container").style.display = "none";
+    document.getElementById("login-container").style.display = "flex";
+    document.getElementById("kanban-container").style.display = "none";
+}
+
+function showKanbanBoard() {
+    document.getElementById("signup-container").style.display = "none";
+    document.getElementById("login-container").style.display = "none";
+    document.getElementById("kanban-container").style.display = "block";
+}
+
+function signUp() {
+    const username = document.getElementById("signup-username").value;
+    const password = document.getElementById("signup-password").value;
+
+    if (username && password) {
+        localStorage.setItem("username", username);
+        localStorage.setItem("password", password);
+        alert("Sign up successful! Please log in.");
+        showLogin();
+    } else {
+        alert("Please fill in all fields.");
     }
 }
 
+function login() {
+    const username = document.getElementById("login-username").value;
+    const password = document.getElementById("login-password").value;
 
-function createTaskElement(taskText) {
-    var task = document.createElement('div'); // Nayi div element create karta hai
-    task.className = 'task'; // task class assign karta hai
-    task.textContent = taskText; // Task ka text set karta hai
-    task.draggable = true; // Task ko draggable banata hai
-    
-    task.ondragstart = function (e) {
-        e.dataTransfer.setData('text/plain', taskText); // Task text ko data transfer mein set karta hai
-        e.dataTransfer.setData('parentId', task.parentNode.id); // Parent id ko data transfer mein set karta hai
-    };
-    
-    return task; // Task element return karta hai
+    const storedUsername = localStorage.getItem("username");
+    const storedPassword = localStorage.getItem("password");
+
+    if (username === storedUsername && password === storedPassword) {
+        localStorage.setItem("loggedIn", "true");
+        showKanbanBoard();
+    } else {
+        showPopup("Invalid username or password.");
+    }
 }
 
+function logout() {
+    localStorage.setItem("loggedIn", "false");
+    showLogin();
+}
+
+// function showPopup()
+
+function showPopup(message) {
+    const popup = document.createElement("div");
+    popup.id = "popup";
+    popup.innerHTML = `
+        <p>${message}</p>
+        <button onclick="closePopup()">Close</button>
+    `;
+    document.body.appendChild(popup);
+    popup.style.display = "block";
+}
+
+function closePopup() {
+    const popup = document.getElementById("popup");
+    if (popup) {
+        document.body.removeChild(popup);
+    }
+}
+
+function addTask() {
+    const newTaskInput = document.getElementById('new-task');
+    const taskText = newTaskInput.value.trim();
+
+    if (taskText) {
+        const task = createTaskElement(taskText);
+        document.getElementById('todo-tasks').appendChild(task);
+        newTaskInput.value = '';
+    }
+}
+
+function createTaskElement(taskText) {
+    const task = document.createElement('div');
+    task.className = 'task';
+    task.textContent = taskText;
+    task.draggable = true;
+
+    task.ondragstart = function (e) {
+        e.dataTransfer.setData('text/plain', taskText);
+        e.dataTransfer.setData('parentId', task.parentNode.id);
+    };
+
+    return task;
+}
 
 function handleDrop(e) {
-    e.preventDefault(); // Default browser action ko prevent karta hai
-    
-    var taskText = e.dataTransfer.getData('text/plain'); // Drag data se task text retrieve karta hai
-    var parentId = e.dataTransfer.getData('parentId'); // Drag data se parent id retrieve karta hai
-    
-    var newTask = createTaskElement(taskText); // Nayi task element create karta hai
-    
-    var parent = document.getElementById(parentId); // Parent element ka reference leta hai
-    var tasks = parent.getElementsByClassName('task'); // Parent ke under sab tasks ka array leta hai
-    
-    for (var i = 0; i < tasks.length; i++) {
-        if (tasks[i].textContent === taskText) { // Agar task text match karta hai
-            parent.removeChild(tasks[i]); // Task ko remove karta hai
+    e.preventDefault();
+
+    const taskText = e.dataTransfer.getData('text/plain');
+    const parentId = e.dataTransfer.getData('parentId');
+
+    const newTask = createTaskElement(taskText);
+
+    const parent = document.getElementById(parentId);
+    const tasks = parent.getElementsByClassName('task');
+
+    for (let i = 0; i < tasks.length; i++) {
+        if (tasks[i].textContent === taskText) {
+            parent.removeChild(tasks[i]);
             break;
         }
     }
-    
-    e.target.appendChild(newTask); // Nayi column mein task ko add karta hai
+
+    e.target.appendChild(newTask);
 }
 
-
 function handleDragOver(e) {
-    e.preventDefault(); // Default browser action ko prevent karta hai
+    e.preventDefault();
 }
 
 function setupColumns() {
-    var columns = ['todo-tasks', 'in-progress-tasks', 'done-tasks']; // Columns ke IDs ka array
-    
-    for (var i = 0; i < columns.length; i++) {
-        var column = document.getElementById(columns[i]); // Column ka reference leta hai
-        column.ondrop = handleDrop; // Drop event listener set karta hai
-        column.ondragover = handleDragOver; // Drag over event listener set karta hai
+    const columns = ['todo-tasks', 'in-progress-tasks', 'done-tasks'];
+
+    for (const columnId of columns) {
+        const column = document.getElementById(columnId);
+        column.ondrop = handleDrop;
+        column.ondragover = handleDragOver;
     }
 }
 
-window.onload = setupColumns; // Page load hone par setupColumns function call karta hai
+window.onload = setupColumns;
+
